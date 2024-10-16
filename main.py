@@ -9,11 +9,11 @@ class Quintuple:
         self.move_direction = move_direction
 
 class Quadruple:
-    def __init__(self, current_state, read_symbol, next_state, move_direction):
+    def __init__(self, current_state, read_symbol, action, next_state):
         self.current_state = current_state
-        self.read_symbol = read_symbol
+        self.read_symbol = read_symbol # pode ser / (sem leitura), ou o símbolo a ser lido
+        self.action = action # pode ser o símbolo a ser escrito ou o movimento (+, -, 0)
         self.next_state = next_state
-        self.move_direction = move_direction
 
 class Fita:
     def __init__(self, entrada=None):
@@ -61,6 +61,8 @@ for _ in range(number_of_transitions):
     quintuples.append(quintuple)
 
 accepting_state = file.readline().strip()
+
+print(accepting_state)
 
 file.close()
 
