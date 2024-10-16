@@ -1,3 +1,5 @@
+from collections import deque
+
 class Quintuple: 
     def __init__(self, current_state, read_symbol, next_state, write_symbol, move_direction):
         self.current_state = current_state
@@ -5,6 +7,21 @@ class Quintuple:
         self.next_state = next_state
         self.write_symbol = write_symbol
         self.move_direction = move_direction
+
+class Quadruple:
+    def __init__(self, current_state, read_symbol, next_state, move_direction):
+        self.current_state = current_state
+        self.read_symbol = read_symbol
+        self.next_state = next_state
+        self.move_direction = move_direction
+
+class Fita:
+    def __init__(self, entrada=None):
+        if entrada:
+            self.fita = deque(entrada)
+        else:
+            self.fita = deque(['B'])
+        self.posicao = 0
 
 file = open('entrada-quintupla.txt', 'r')
 
@@ -43,9 +60,9 @@ for _ in range(number_of_transitions):
 
     quintuples.append(quintuple)
 
+accepting_state = file.readline().strip()
+
 file.close()
 
-tape_input = file.readline().strip()
-
-for quintuple in quintuples:
-    print(f'({quintuple.current_state}, {quintuple.read_symbol}) = ({quintuple.next_state}, {quintuple.write_symbol}, {quintuple.move_direction})')
+# for quintuple in quintuples:
+#     print(f'({quintuple.current_state}, {quintuple.read_symbol}) = ({quintuple.next_state}, {quintuple.write_symbol}, {quintuple.move_direction})')
