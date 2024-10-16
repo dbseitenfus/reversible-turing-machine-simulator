@@ -10,8 +10,12 @@ A primeira linha apresenta números, que indicam:
 
 A seguir, temos:
 - os estados, 
-- na próxima linha alfabeto de entrada e logo alfabeto da fita. 
-- Nas linhas sequentes temos a funcão de transição (como explicada no artigo). 
-- Depois da funcão de transição, segue uma entrada. 
+- alfabeto de entrada e
+- alfabeto da fita 
+
+Nas linhas sequentes temos:
+- a funcão de transição (como explicada no artigo). 
+
+Depois da funcão de transição, segue uma entrada. 
 
 *** Lembrando que o estado de aceitação é o último, no caso do exemplo, o 6.
