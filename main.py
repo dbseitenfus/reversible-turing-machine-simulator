@@ -45,5 +45,7 @@ for _ in range(number_of_transitions):
 
 file.close()
 
+tape_input = file.readline().strip()
+
 for quintuple in quintuples:
     print(f'({quintuple.current_state}, {quintuple.read_symbol}) = ({quintuple.next_state}, {quintuple.write_symbol}, {quintuple.move_direction})')
