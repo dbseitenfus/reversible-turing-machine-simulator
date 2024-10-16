@@ -15,13 +15,13 @@ class Quadruple:
         self.action = action # pode ser o símbolo a ser escrito ou o movimento (+, -, 0)
         self.next_state = next_state
 
-class Fita:
-    def __init__(self, entrada=None):
-        if entrada:
-            self.fita = deque(entrada)
+class Tape:
+    def __init__(self, input=None):
+        if input:
+            self.tape = deque(input)
         else:
-            self.fita = deque(['B'])
-        self.posicao = 0
+            self.tape = deque(['B'])
+        self.position = 0
 
 file = open('entrada-quintupla.txt', 'r')
 
