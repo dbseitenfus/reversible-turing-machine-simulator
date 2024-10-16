@@ -60,9 +60,9 @@ for _ in range(number_of_transitions):
 
     quintuples.append(quintuple)
 
-accepting_state = file.readline().strip()
+tape_input = file.readline().strip()
 
-print(accepting_state)
+print(tape_input)
 
 file.close()
 
