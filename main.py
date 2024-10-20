@@ -23,48 +23,55 @@ class Tape:
             self.tape = deque(['B'])
         self.position = 0
 
-file = open('entrada-quintupla.txt', 'r')
+class Simulation:
+    def __init__(self):
+        file = open('entrada-quintupla.txt', 'r')
+        self.read_header(file)
+        self.read_quintuples(file)
+        self.read_tape_input(file)
+        file.close()
 
-first_line = file.readline()
-second_line = file.readline()
-third_line = file.readline()
-fourth_line = file.readline()
+    def read_header(self, file):
+        first_line = file.readline()
+        second_line = file.readline()
+        third_line = file.readline()
+        fourth_line = file.readline()
+        first_line_data = first_line.split(' ')
+        self.number_of_statesnumber_of_states = first_line_data[0]
+        self.number_of_symbols_input_alphabet = first_line_data[1]
+        self.number_of_symbols_tape_alphabet = first_line_data[2]
+        self.number_of_transitions = int(first_line_data[3])
+        self.states = second_line.replace('\n', '').split(' ')
+        self.input_alphabet = third_line.replace('\n', '').split(' ')
+        self.tape_alphabet = fourth_line.replace('\n', '').split(' ')
 
-first_line_data = first_line.split(' ')
+    def read_quintuples(self, file):
+        quintuples = []
 
-number_of_states = first_line_data[0]
-number_of_symbols_input_alphabet = first_line_data[1]
-number_of_symbols_tape_alphabet = first_line_data[2]
-number_of_transitions = int(first_line_data[3])
+        for _ in range(self.number_of_transitions):
+            line = file.readline().strip()
 
-states = second_line.replace('\n', '').split(' ')
-input_alphabet = third_line.replace('\n', '').split(' ')
-tape_alphabet = fourth_line.replace('\n', '').split(' ')
+            parts = line.replace('(','').replace(')','').split('=')
+            left_part = parts[0].split(',')
+            right_part = parts[1].split(',')
 
-quintuples = []
+            quintuple = Quintuple(
+                current_state = int(left_part[0]),
+                read_symbol = left_part[1],
+                next_state = int(right_part[0]),
+                write_symbol = right_part[1],
+                move_direction = right_part[2]
+            )
 
-for _ in range(number_of_transitions):
-    line = file.readline().strip()
+            quintuples.append(quintuple)
 
-    parts = line.replace('(','').replace(')','').split('=')
-    left_part = parts[0].split(',')
-    right_part = parts[1].split(',')
+    def read_tape_input(self, file):
+        self.tape_input = file.readline().strip()
 
-    quintuple = Quintuple(
-        current_state = int(left_part[0]),
-        read_symbol = left_part[1],
-        next_state = int(right_part[0]),
-        write_symbol = right_part[1],
-        move_direction = right_part[2]
-    )
+    
+    def run(self):
+        print(self.tape_input)
 
-    quintuples.append(quintuple)
-
-tape_input = file.readline().strip()
-
-print(tape_input)
-
-file.close()
-
-# for quintuple in quintuples:
-#     print(f'({quintuple.current_state}, {quintuple.read_symbol}) = ({quintuple.next_state}, {quintuple.write_symbol}, {quintuple.move_direction})')
+if __name__ == "__main__":
+    simulation = Simulation()
+    simulation.run()
