@@ -18,10 +18,21 @@ class Quadruple:
 class Tape:
     def __init__(self, input=None):
         if input:
-            self.tape = deque(input)
+            self.tape = input
         else:
-            self.tape = deque(['B'])
+            self.tape = []
         self.position = 0
+    
+    def get_current_symbol(self):
+        if self.position > len(self.tape)-1:
+            return 'EMPTY'
+        return self.tape[self.position]
+    
+    def write_symbol(self, symbol):
+        if self.position > len(self.tape)-1:
+            self.tape.append('EMPTY')
+            return
+        self.tape[self.position] = symbol
 
 class Simulation:
     def __init__(self):
@@ -44,6 +55,7 @@ class Simulation:
         self.number_of_symbols_tape_alphabet = first_line_data[2]
         self.number_of_transitions = int(first_line_data[3])
         self.states = second_line.replace('\n', '').split(' ')
+        self.final_state = self.states[len(self.states)-1]
         self.input_alphabet = third_line.replace('\n', '').split(' ')
         self.tape_alphabet = fourth_line.replace('\n', '').split(' ')
 
@@ -58,9 +70,9 @@ class Simulation:
             right_part = parts[1].split(',')
 
             quintuple = Quintuple(
-                current_state = int(left_part[0]),
+                current_state = left_part[0],
                 read_symbol = left_part[1],
-                next_state = int(right_part[0]),
+                next_state = right_part[0],
                 write_symbol = right_part[1],
                 move_direction = right_part[2]
             )
@@ -71,9 +83,25 @@ class Simulation:
         self.tape_input = file.readline().strip()
 
     def create_tapes(self):
-        self.input_tape = Tape(self.tape_input)
+        self.input_tape = Tape(list(self.tape_input))
         self.history_tape = Tape()
         self.output_tape = Tape()
+
+    def print_tapes(self):
+        print("tapes:")
+        print(f"input: {self.input_tape.tape}")
+        print(f"history: {self.history_tape.tape}")
+        print(f"output: {self.output_tape.tape}")
+
+    def get_quintuple(self, state, read_symbol):
+        for quintuple in self.quintuples:
+            if quintuple.current_state == state and quintuple.read_symbol == read_symbol: 
+                return quintuple
+            
+    def get_quadruple(self, state, read_symbol):
+        for quadruple in self.quadruples:
+            if quadruple.current_state == state and (quadruple.read_symbol == read_symbol or quadruple.read_symbol == '/'): 
+                return quadruple
     
     def run(self):
         print(self.tape_input)
@@ -81,6 +109,35 @@ class Simulation:
         print(self.states)
         for quadruple in self.quadruples:
             print(f'({quadruple.current_state}, {quadruple.read_symbol})=({quadruple.action}, {quadruple.next_state})')
+        self.print_tapes()
+
+        state = self.states[0]
+
+        while state != self.final_state:
+            print('')
+            self.print_tapes()
+            current_symbol = self.input_tape.get_current_symbol()
+            quadruple = self.get_quadruple(state, current_symbol)
+            print(f"ESTADO: ({state}, {current_symbol})")
+
+
+            if quadruple is None:
+                print("Movimento inválido!")
+                return
+            
+            if quadruple.read_symbol != '/': #leitura/escrita
+                # self.input_tape.tape[self.input_tape.position] = quadruple.action
+                self.input_tape.write_symbol(quadruple.action)
+            else: # movimento
+                if quadruple.action == '-':
+                    self.input_tape.position -= 1
+                elif quadruple.action == '+':    
+                    self.input_tape.position += 1
+
+            state = quadruple.next_state
+
+        
+
 
     def create_quadruples(self):
         self.quadruples = []
@@ -88,20 +145,29 @@ class Simulation:
 
             new_state_id = f"{quintuple.current_state}_{sum(1 for state in self.states if state.startswith(f'{quintuple.current_state}_')) + 1}"
 
+            move_direction = ''
+            if quintuple.move_direction == 'L':
+                move_direction = '-'
+            elif quintuple.move_direction == 'R':
+                move_direction = '+'
+            else:
+                move_direction = '0'
+            
             moviment_quadruple = Quadruple(
                 new_state_id,
                 '/',
-                quintuple.next_state,
-                quintuple.move_direction
+                move_direction,
+                quintuple.next_state
             )
+       
 
             self.states.append(new_state_id)
 
             read_and_write_quadruple = Quadruple(
                 quintuple.current_state,
                 quintuple.read_symbol,
-                new_state_id,
-                quintuple.write_symbol
+                quintuple.write_symbol,
+                new_state_id
             )
 
             self.quadruples.append(read_and_write_quadruple)
