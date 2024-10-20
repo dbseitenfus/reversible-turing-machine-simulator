@@ -31,6 +31,8 @@ class Simulation:
         self.read_tape_input(file)
         file.close()
 
+        self.create_tapes()
+
     def read_header(self, file):
         first_line = file.readline()
         second_line = file.readline()
@@ -46,7 +48,7 @@ class Simulation:
         self.tape_alphabet = fourth_line.replace('\n', '').split(' ')
 
     def read_quintuples(self, file):
-        quintuples = []
+        self.quintuples = []
 
         for _ in range(self.number_of_transitions):
             line = file.readline().strip()
@@ -63,14 +65,48 @@ class Simulation:
                 move_direction = right_part[2]
             )
 
-            quintuples.append(quintuple)
+            self.quintuples.append(quintuple)
 
     def read_tape_input(self, file):
         self.tape_input = file.readline().strip()
 
+    def create_tapes(self):
+        self.input_tape = Tape(self.tape_input)
+        self.history_tape = Tape()
+        self.output_tape = Tape()
     
     def run(self):
         print(self.tape_input)
+        self.create_quadruples()
+        print(self.states)
+        for quadruple in self.quadruples:
+            print(f'({quadruple.current_state}, {quadruple.read_symbol})=({quadruple.action}, {quadruple.next_state})')
+
+    def create_quadruples(self):
+        self.quadruples = []
+        for quintuple in self.quintuples:
+
+            new_state_id = f"{quintuple.current_state}_{sum(1 for state in self.states if state.startswith(f'{quintuple.current_state}_')) + 1}"
+
+            moviment_quadruple = Quadruple(
+                new_state_id,
+                '/',
+                quintuple.next_state,
+                quintuple.move_direction
+            )
+
+            self.states.append(new_state_id)
+
+            read_and_write_quadruple = Quadruple(
+                quintuple.current_state,
+                quintuple.read_symbol,
+                new_state_id,
+                quintuple.write_symbol
+            )
+
+            self.quadruples.append(read_and_write_quadruple)
+            self.quadruples.append(moviment_quadruple)
+
 
 if __name__ == "__main__":
     simulation = Simulation()
