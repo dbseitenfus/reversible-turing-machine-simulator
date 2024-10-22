@@ -25,12 +25,12 @@ class Tape:
     
     def get_current_symbol(self):
         if self.position > len(self.tape)-1:
-            return 'EMPTY'
+            return 'B'
         return self.tape[self.position]
     
     def write_symbol(self, symbol):
         if self.position > len(self.tape)-1:
-            self.tape.append('EMPTY')
+            self.tape.append('B')
             return
         self.tape[self.position] = symbol
 
