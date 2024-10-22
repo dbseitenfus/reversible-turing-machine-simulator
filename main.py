@@ -30,9 +30,11 @@ class Tape:
     
     def write_symbol(self, symbol):
         if self.position > len(self.tape)-1:
-            self.tape.append('B')
+            self.tape.append(symbol)
             return
         self.tape[self.position] = symbol
+    
+
 
 class Simulation:
     def __init__(self):
@@ -128,6 +130,8 @@ class Simulation:
             if quadruple.read_symbol != '/': #leitura/escrita
                 # self.input_tape.tape[self.input_tape.position] = quadruple.action
                 self.input_tape.write_symbol(quadruple.action)
+                self.history_tape.write_symbol(self.quadruples.index(quadruple))
+                self.history_tape.position += 1
             else: # movimento
                 if quadruple.action == '-':
                     self.input_tape.position -= 1
@@ -136,8 +140,21 @@ class Simulation:
 
             state = quadruple.next_state
 
-        
+        self.output_tape.tape = self.input_tape.tape.copy()
 
+        for id_quadruple in reversed(self.history_tape.tape):
+            quadruple = self.quadruples[id_quadruple]
+            quadruple_next = self.get_quadruple(quadruple.next_state, quadruple.read_symbol)
+
+            if quadruple_next.action == '-':
+                self.input_tape.position += 1
+            elif quadruple_next.action == '+':
+                self.input_tape.position -= 1
+            
+            self.input_tape.write_symbol(quadruple.read_symbol)
+            self.history_tape.tape.pop()
+        
+        self.print_tapes()
 
     def create_quadruples(self):
         self.quadruples = []
